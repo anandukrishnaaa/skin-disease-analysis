@@ -128,10 +128,15 @@ def predict_tab():
                 with open(image_path, "wb") as f:
                     f.write(uploaded_file.getvalue())
 
-                with st.spinner("Classifying skin anomalay..."):
-                    predict_result, time_taken = model_instance.predict_class(
-                        image_path, num_predictions=num_predictions
-                    )
+                with st.spinner("Classifying skin anomaly..."):
+                    try:
+                        predict_result, time_taken = model_instance.predict_class(
+                            image_path, num_predictions=num_predictions
+                        )
+                    except Exception as e:
+                        predict_result = (
+                            f"Error when trying to fetch prediction results: {e}"
+                        )
 
                 if not predict_result.startswith("Error"):
                     if json_toggle:

@@ -82,7 +82,7 @@ Choose between `MobileNetV2` and `ResNet50` for skin disease prediction.
 
 ## How to Run
 
-1. In the command prompt, set `PIPENV_VENV_IN_PROJECT=1`
+1. In the command prompt, `set PIPENV_VENV_IN_PROJECT=1`
 2. Run `pipenv install`
 3. Download dataset from [here](https://drive.google.com/drive/folders/1AiDVpgy-o4ZLKXZ_yqnWWEHFYhCbrfP1), unzip and copy it over to dataset folder.
 4. Run the application: `streamlit run app.py`
