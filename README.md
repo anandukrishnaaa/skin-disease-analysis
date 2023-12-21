@@ -85,7 +85,18 @@ Choose between `MobileNetV2` and `ResNet50` for skin disease prediction.
 1. In the command prompt, `set PIPENV_VENV_IN_PROJECT=1`
 2. Run `pipenv install`
 3. Download dataset from [here](https://drive.google.com/drive/folders/1AiDVpgy-o4ZLKXZ_yqnWWEHFYhCbrfP1), unzip and copy it over to dataset folder.
-4. Run the application: `streamlit run app.py`
+4. Run the application: `streamlit run app.py` from `scripts/app` folder.
+
+## Screenshots
+
+Uploading an image for prediction.
+![Uploaded image for prediction](screenshots/image.png)
+
+Prediction results.
+![Prediction result](screenshots/image-1.png)
+
+Training the model.
+![Training the model](screenshots/image-2.png)
 
 ## Dependency graph
 ```python

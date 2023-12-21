@@ -1,6 +1,14 @@
 import streamlit as st
 from _ml import SkinDiseaseModel
-from _config import MODEL_DIR, TRAIN_DIR, TEST_DIR, TEST_IMG_PATH, RESULT_DIR, LOG_DIR
+from _config import (
+    MODEL_DIR,
+    TRAIN_DIR,
+    TEST_DIR,
+    TEST_IMG_PATH,
+    RESULT_DIR,
+    LOG_DIR,
+    logger,
+)
 import datetime
 from PIL import Image
 from pathlib import Path
@@ -269,7 +277,9 @@ def evaluate_tab():
             )
 
 
-def main():
+def main(
+    display_status=True, dataset_info=True, app_title="Skin disease classification"
+):
     st.markdown(
         r"""
     <style>
@@ -280,20 +290,28 @@ def main():
     """,
         unsafe_allow_html=True,
     )
-    st.title("Skin disease prediction 🔬")
-    # Display directory status table in the sidebar
-    status_data = directory_status()
-    # Display the table without column names
-    for key, value in status_data.items():
-        st.sidebar.caption(f"**{key}**: {value}")
 
-    dataset_info, directory_count = directory_info(data_path=TRAIN_DIR)
-    st.sidebar.write(f"Total number of classes available: **{directory_count}**")
-    # Display the table without column names
-    for key, value in dataset_info.items():
-        st.sidebar.caption(f"**{key}**: {value}")
+    if display_status:
+        # Display directory status table in the sidebar
+        status_data = directory_status()
+        # Display the table without column names
+        for key, value in status_data.items():
+            st.sidebar.caption(f"**{key}**: {value}")
+    else:
+        logger.info("Directory status info disabled.")
 
-    # Tabs
+    if dataset_info:
+        dataset_info, directory_count = directory_info(data_path=TRAIN_DIR)
+        st.sidebar.write(f"Total number of classes available: **{directory_count}**")
+        # Display the table without column names
+        for key, value in dataset_info.items():
+            st.sidebar.caption(f"**{key}**: {value}")
+    else:
+        logger.info("Dataset info disabled.")
+
+    st.title(app_title)
+
+    # Tabs for main page
     tab1, tab2, tab3 = st.tabs(["Predict", "Train", "Evaluate"])
 
     # Main content based on selected tab
@@ -306,4 +324,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    display_status = True  # Display directory status
+    dataset_info = False  # Display dataset status
+    app_title = "Skin disease prediction 🔬"
+    main(display_status, dataset_info, app_title)

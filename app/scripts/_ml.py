@@ -22,6 +22,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import time
+import shutil
 from _config import MODEL_DIR, TRAIN_DIR, TEST_DIR, RESULT_DIR, TEST_IMG_PATH, logger
 
 
@@ -78,6 +79,23 @@ class SkinDiseaseModel:
         )
 
         return is_balanced, balance_message
+
+    # Denoise image before prediction
+    def denoise_data(self, img):
+        # Check if the image is grayscale
+        if len(img.shape) == 2:
+            # Convert the image to BGR color space
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+        # Check if the image data type is uint8
+        if img.dtype != np.uint8:
+            # Convert the image data to uint8
+            img = np.uint8(img)
+
+        # Denoise the image using the cv2.fastNlMeansDenoisingColored function
+        img_denoised = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+
+        return img_denoised
 
     def create_base_model(self):
         if self.model_type == "mobilenetv2":
@@ -178,10 +196,6 @@ class SkinDiseaseModel:
             logger.error(f"Error during training: {str(e)}")
             return f"Error during training: {str(e)}"
 
-        except KeyboardInterrupt as e:
-            logger.error(f"Error during training: {str(e)}")
-            print("Training manually aborted!")
-
         finally:
             # Evaluate the model on the test set
             evaluate_result = self.evaluate_model(TEST_DIR)
@@ -272,9 +286,13 @@ class SkinDiseaseModel:
             # Load weights into the model
             model.load_weights(self.model_weights_file)
 
-            # Example of image preprocessing and classification
+            # Denoise the image
+            logger.info("Calling denoise function for image before prediction.")
+
+            # Image preprocessing and classification
             img = cv2.imread(img_path)
             img = cv2.resize(img, (224, 224))
+            img = self.denoise_data(img)
             img = self.preprocess_function(np.array([img]))
 
             # Make predictions using the trained model on the image
